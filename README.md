@@ -15,12 +15,12 @@ Addresses support various types of encoding formats and have constructors
 for each format
 
 ```golang
-// address by ID
+// address from ID
 idAddress := NewIDAddress(id)
 // address from a secp pub key
 secp256k1Address := NewSecp256k1Address(pubkey)
-// address from an actor
-actorAddress := func NewActorAddress(data) 
+// address from data for actor protocol
+actorAddress := NewActorAddress(data) 
 // address from the BLS pubkey
 blsAddress := NewBLSAddress(pubkey)
 ```
