@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	ffi "github.com/filecoin-project/filecoin-ffi"
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -284,24 +283,6 @@ func TestVectorActorAddress(t *testing.T) {
 	}
 }
 
-func TestRandomBLSAddress(t *testing.T) {
-	assert := assert.New(t)
-
-	pk := ffi.PrivateKeyPublicKey(ffi.PrivateKeyGenerate())
-
-	addr, err := NewBLSAddress(pk[:])
-	assert.NoError(err)
-	assert.Equal(BLS, addr.Protocol())
-
-	str, err := encode(Mainnet, addr)
-	assert.NoError(err)
-
-	maybe, err := decode(str)
-	assert.NoError(err)
-	assert.Equal(addr, maybe)
-
-}
-
 func TestVectorBLSAddress(t *testing.T) {
 	testCases := []struct {
 		input    []byte
@@ -412,8 +393,8 @@ func TestInvalidByteAddresses(t *testing.T) {
 		{append([]byte{2}, make([]byte, PayloadHashLength+1)...), ErrInvalidPayload},
 
 		// BLS Protocol
-		{append([]byte{3}, make([]byte, ffi.PublicKeyBytes-1)...), ErrInvalidPayload},
-		{append([]byte{3}, make([]byte, ffi.PrivateKeyBytes+1)...), ErrInvalidPayload},
+		{append([]byte{3}, make([]byte, BlsPublicKeyBytes-1)...), ErrInvalidPayload},
+		{append([]byte{3}, make([]byte, BlsPrivateKeyBytes+1)...), ErrInvalidPayload},
 	}
 
 	for _, tc := range testCases {
