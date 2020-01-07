@@ -56,6 +56,12 @@ const ChecksumHashLength = 4
 // it include the network prefx, protocol, and bls publickey
 const MaxAddressStringLength = 2 + 84
 
+// BlsPublicKeyBytes is the length of a BLS public key
+const BlsPublicKeyBytes = 48
+
+// BlsPrivateKeyBytes is the length of a BLS private key
+const BlsPrivateKeyBytes = 32
+
 var payloadHashConfig = &blake2b.Config{Size: PayloadHashLength}
 var checksumHashConfig = &blake2b.Config{Size: ChecksumHashLength}
 
