@@ -355,6 +355,19 @@ func hash(ingest []byte, cfg *blake2b.Config) []byte {
 	return hasher.Sum(nil)
 }
 
+func (a Address) MarshalBinary() ([]byte, error) {
+	return a.Bytes(), nil
+}
+
+func (a *Address) UnmarshalBinary(b []byte) error {
+	newAddr, err := NewFromBytes(b)
+	if err != nil {
+		return err
+	}
+	*a = newAddr
+	return nil
+}
+
 func (a Address) MarshalCBOR(w io.Writer) error {
 	if a == Undef {
 		return fmt.Errorf("cannot marshal undefined address")
