@@ -131,22 +131,6 @@ func (a Address) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + a.String() + `"`), nil
 }
 
-// Format implements the Formatter interface.
-func (a Address) Format(f fmt.State, c rune) {
-	switch c {
-	case 'v':
-		if a.Empty() {
-			fmt.Fprint(f, UndefAddressString) //nolint: errcheck
-		} else {
-			fmt.Fprintf(f, "[%x - %x]", a.Protocol(), a.Payload()) // nolint: errcheck
-		}
-	case 's':
-		fmt.Fprintf(f, "%s", a.String()) // nolint: errcheck
-	default:
-		fmt.Fprintf(f, "%"+string(c), a.Bytes()) // nolint: errcheck
-	}
-}
-
 func (a *Address) Scan(value interface{}) error {
 	switch value := value.(type) {
 	case string:
