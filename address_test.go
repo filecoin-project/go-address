@@ -12,7 +12,6 @@ import (
 
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/filecoin-project/go-crypto"
 )
@@ -421,22 +420,6 @@ func TestChecksum(t *testing.T) {
 	assert.True(ValidateChecksum(data, cksm))
 	assert.False(ValidateChecksum(bata, cksm))
 
-}
-
-func TestAddressFormat(t *testing.T) {
-	assert := assert.New(t)
-	require := require.New(t)
-
-	a, err := NewActorAddress([]byte("hello"))
-	require.NoError(err)
-
-	assert.Equal("t2wvjry4bx6bwj6kkhcmvgu5zafqyi5cjzbtet3va", a.String())
-	assert.Equal("02B5531C7037F06C9F2947132A6A77202C308E8939", fmt.Sprintf("%X", a))
-	assert.Equal("[2 - b5531c7037f06c9f2947132a6a77202c308e8939]", fmt.Sprintf("%v", a))
-
-	assert.Equal("", fmt.Sprintf("%X", Undef))
-	assert.Equal(UndefAddressString, Undef.String())
-	assert.Equal(UndefAddressString, fmt.Sprintf("%v", Undef))
 }
 
 func TestCborMarshal(t *testing.T) {
