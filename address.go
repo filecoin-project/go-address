@@ -357,12 +357,11 @@ func (a Address) MarshalCBOR(w io.Writer) error {
 		return fmt.Errorf("cannot marshal undefined address")
 	}
 
-	abytes := a.Bytes()
-	if _, err := w.Write(cbg.CborEncodeMajorType(cbg.MajByteString, uint64(len(abytes)))); err != nil {
+	if err := cbg.WriteMajorTypeHeader(w, cbg.MajByteString, uint64(len(a.str))); err != nil {
 		return err
 	}
 
-	if _, err := w.Write(abytes); err != nil {
+	if _, err := io.WriteString(w, a.str); err != nil {
 		return err
 	}
 
