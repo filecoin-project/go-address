@@ -352,8 +352,13 @@ func (a *Address) UnmarshalBinary(b []byte) error {
 	return nil
 }
 
-func (a Address) MarshalCBOR(w io.Writer) error {
-	if a == Undef {
+func (a *Address) MarshalCBOR(w io.Writer) error {
+	if a == nil {
+		_, err := w.Write(cbg.CborNull)
+		return err
+	}
+
+	if *a == Undef {
 		return fmt.Errorf("cannot marshal undefined address")
 	}
 
@@ -368,7 +373,17 @@ func (a Address) MarshalCBOR(w io.Writer) error {
 	return nil
 }
 
-func (a *Address) UnmarshalCBOR(br io.Reader) error {
+func (a *Address) UnmarshalCBOR(r io.Reader) error {
+	br := cbg.GetPeeker(r)
+
+	pb, err := br.PeekByte()
+	if err != nil {
+		return err
+	}
+	if pb == cbg.CborNull[0] {
+		return nil
+	}
+
 	maj, extra, err := cbg.CborReadHeader(br)
 	if err != nil {
 		return err

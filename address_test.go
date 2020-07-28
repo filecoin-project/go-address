@@ -459,6 +459,23 @@ func TestCborMarshal(t *testing.T) {
 	}
 }
 
+func TestCborMarshalNilAddress(t *testing.T) {
+	var addr *Address
+	buf := new(bytes.Buffer)
+	if err := addr.MarshalCBOR(buf); err != nil {
+		t.Fatal(err)
+	}
+
+	var out *Address
+	if err := out.UnmarshalCBOR(buf); err != nil {
+		t.Fatal(err)
+	}
+
+	if out != nil {
+		t.Fatalf("failed to roundtrip nil address")
+	}
+}
+
 func BenchmarkCborMarshal(b *testing.B) {
 	addr, err := NewFromString("t15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq")
 	if err != nil {
