@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 
 	cbor "github.com/ipfs/go-ipld-cbor"
@@ -149,7 +150,7 @@ func (a *Address) Scan(value interface{}) error {
 
 // NewIDAddress returns an address using the ID protocol.
 func NewIDAddress(id uint64) (Address, error) {
-	if id >= 1<<63 {
+	if id > math.MaxInt64 {
 		return Undef, xerrors.New("IDs must be less than 2^63")
 	}
 	return newAddress(ID, varint.ToUvarint(id))
