@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base32"
 	"fmt"
-	"math"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -76,7 +75,7 @@ func TestVectorsIDAddress(t *testing.T) {
 		{uint64(1024), "t01024"},
 		{uint64(1729), "t01729"},
 		{uint64(999999), "t0999999"},
-		{math.MaxUint64, fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxUint64, 10))},
+		{(1 << 63) - 1, fmt.Sprintf("t0%s", strconv.FormatUint((1<<63)-1, 10))},
 	}
 
 	for _, tc := range testCases {
