@@ -76,7 +76,7 @@ func TestVectorsIDAddress(t *testing.T) {
 		{uint64(1024), "t01024"},
 		{uint64(1729), "t01729"},
 		{uint64(999999), "t0999999"},
-		{math.MaxUint64, fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxUint64, 10))},
+		{math.MaxInt64, fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxInt64, 10))},
 	}
 
 	for _, tc := range testCases {
