@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/filecoin-project/go-crypto"
+	cbg "github.com/whyrusleeping/cbor-gen"
 )
 
 func init() {
@@ -466,13 +467,8 @@ func TestCborMarshalNilAddress(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var out *Address
-	if err := out.UnmarshalCBOR(buf); err != nil {
-		t.Fatal(err)
-	}
-
-	if out != nil {
-		t.Fatalf("failed to roundtrip nil address")
+	if string(cbg.CborNull) != buf.String() {
+		t.Fatal("expected null")
 	}
 }
 

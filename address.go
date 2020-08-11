@@ -380,18 +380,6 @@ func (a *Address) MarshalCBOR(w io.Writer) error {
 func (a *Address) UnmarshalCBOR(r io.Reader) error {
 	br := cbg.GetPeeker(r)
 
-	pb, err := br.ReadByte()
-	if err != nil {
-		return err
-	}
-	if pb == cbg.CborNull[0] {
-		return nil
-	}
-	err = br.UnreadByte()
-	if err != nil {
-		return err
-	}
-
 	maj, extra, err := cbg.CborReadHeader(br)
 	if err != nil {
 		return err
