@@ -313,6 +313,11 @@ func decode(a string) (Address, error) {
 	if err != nil {
 		return Undef, err
 	}
+
+	if len(payloadcksm)-ChecksumHashLength < 0 {
+		return Undef, ErrInvalidChecksum
+	}
+
 	payload := payloadcksm[:len(payloadcksm)-ChecksumHashLength]
 	cksm := payloadcksm[len(payloadcksm)-ChecksumHashLength:]
 
