@@ -80,6 +80,9 @@ func (a Address) Protocol() Protocol {
 
 // Payload returns the payload of the address.
 func (a Address) Payload() []byte {
+	if len(a.str) == 0 {
+		return nil
+	}
 	return []byte(a.str[1:])
 }
 
