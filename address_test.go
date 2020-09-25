@@ -203,6 +203,7 @@ func TestVectorSecp256k1Address(t *testing.T) {
 
 			// Testnet
 			// Round trip encoding and decoding from string
+			currentNetwork = Testnet
 			addr, err := NewSecp256k1Address(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
@@ -228,8 +229,7 @@ func TestVectorSecp256k1Address(t *testing.T) {
 
 			// Mainnet
 			// Round trip encoding and decoding from string
-			addr.SetNetwork(Mainnet)
-			assert.Equal(Mainnet, addr.GetNetwork())
+			currentNetwork = Mainnet
 			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
@@ -249,8 +249,6 @@ func TestVectorSecp256k1Address(t *testing.T) {
 			var newMainnetAddr Address
 			err = newMainnetAddr.UnmarshalJSON(mb)
 			assert.NoError(err)
-			// TODO support decoding with network natively
-			newMainnetAddr.SetNetwork(Mainnet)
 			assert.Equal(addr, newMainnetAddr)
 
 		})
@@ -321,6 +319,7 @@ func TestVectorActorAddress(t *testing.T) {
 
 			// Testnet
 			// Round trip encoding and decoding from string
+			currentNetwork = Testnet
 			addr, err := NewActorAddress(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
@@ -346,8 +345,7 @@ func TestVectorActorAddress(t *testing.T) {
 
 			// Mainnet
 			// Round trip encoding and decoding from string
-			addr.SetNetwork(Mainnet)
-			assert.Equal(Mainnet, addr.GetNetwork())
+			currentNetwork = Mainnet
 			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
@@ -367,8 +365,6 @@ func TestVectorActorAddress(t *testing.T) {
 			var newMainnetAddr Address
 			err = newMainnetAddr.UnmarshalJSON(mb)
 			assert.NoError(err)
-			// TODO support decoding with network natively
-			newMainnetAddr.SetNetwork(Mainnet)
 			assert.Equal(addr, newMainnetAddr)
 		})
 	}
@@ -429,6 +425,7 @@ func TestVectorBLSAddress(t *testing.T) {
 
 			// Testnet
 			// Round trip encoding and decoding from string
+			currentNetwork = Testnet
 			addr, err := NewBLSAddress(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
@@ -454,8 +451,7 @@ func TestVectorBLSAddress(t *testing.T) {
 
 			// Mainnet
 			// Round trip encoding and decoding from string
-			addr.SetNetwork(Mainnet)
-			assert.Equal(Mainnet, addr.GetNetwork())
+			currentNetwork = Mainnet
 			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
@@ -475,8 +471,6 @@ func TestVectorBLSAddress(t *testing.T) {
 			var newMainnetAddr Address
 			err = newMainnetAddr.UnmarshalJSON(mb)
 			assert.NoError(err)
-			// TODO support decoding with network natively
-			newMainnetAddr.SetNetwork(Mainnet)
 			assert.Equal(addr, newMainnetAddr)
 		})
 	}

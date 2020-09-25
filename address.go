@@ -32,11 +32,11 @@ var addressAtlasEntry = atlas.BuildEntry(Address{}).Transform().
 		})).
 	Complete()
 
+// currentNetwork specifies which network the address belongs to
+var currentNetwork = Testnet
+
 // Address is the go type that represents an address in the filecoin network.
-type Address struct{
-	str string
-	network Network
-}
+type Address struct{ str string }
 
 // Undef is the type that represents an undefined address.
 var Undef = Address{}
@@ -96,7 +96,7 @@ func (a Address) Bytes() []byte {
 
 // String returns an address encoded as a string.
 func (a Address) String() string {
-	str, err := encode(a.network, a)
+	str, err := encode(currentNetwork, a)
 	if err != nil {
 		panic(err) // I don't know if this one is okay
 	}
@@ -152,16 +152,6 @@ func (a *Address) Scan(value interface{}) error {
 	default:
 		return xerrors.New("non-string types unsupported")
 	}
-}
-
-// SetNetwork sets network for an address
-func (a *Address) SetNetwork(network Network) {
-	a.network = network
-}
-
-// GetNetwork returns the network for an address
-func (a *Address) GetNetwork() Network {
-	return a.network
 }
 
 // NewIDAddress returns an address using the ID protocol.
@@ -246,11 +236,7 @@ func newAddress(protocol Protocol, payload []byte) (Address, error) {
 	buf[0] = protocol
 	copy(buf[1:], payload)
 
-	// return testnet address by default
-	return Address{
-		string(buf),
-		Testnet,
-	}, nil
+	return Address{string(buf)}, nil
 }
 
 func encode(network Network, addr Address) (string, error) {
