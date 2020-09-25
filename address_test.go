@@ -201,61 +201,58 @@ func TestVectorSecp256k1Address(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			assert := assert.New(t)
 
-			// Address#String
+			// Testnet
 			// Round trip encoding and decoding from string
 			addr, err := NewSecp256k1Address(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
-
-			maybeAddr, err := NewFromString(tc.expectedTestnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(SECP256K1, maybeAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeAddrBytes, err := NewFromBytes(maybeAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeAddr, maybeAddrBytes)
-
-			// Round trip encoding and decoding json
-			b, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newAddr Address
-			err = newAddr.UnmarshalJSON(b)
-			assert.NoError(err)
-			assert.Equal(addr, newAddr)
-
-			// Address#StringFor
-			// Round trip encoding and decoding from string for testnet
-			testnetAddrStr, err := addr.StringFor(Testnet)
-			assert.NoError(err)
-			assert.Equal(tc.expectedTestnetAddrStr, testnetAddrStr)
 
 			maybeTestnetAddr, err := NewFromString(tc.expectedTestnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(SECP256K1, maybeTestnetAddr.Protocol())
 			assert.Equal(addressHash(tc.input), maybeTestnetAddr.Payload())
 
-			// Round trip to and from bytes for testnet
+			// Round trip to and from bytes
 			maybeTestnetAddrBytes, err := NewFromBytes(maybeTestnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeTestnetAddr, maybeTestnetAddrBytes)
 
-			// Round trip encoding and decoding from string for mainnet
-			mainnetAddrStr, err := addr.StringFor(Mainnet)
+			// Round trip encoding and decoding json
+			tb, err := addr.MarshalJSON()
 			assert.NoError(err)
-			assert.Equal(tc.expectedMainnetAddrStr, mainnetAddrStr)
+
+			var newTestnetAddr Address
+			err = newTestnetAddr.UnmarshalJSON(tb)
+			assert.NoError(err)
+			assert.Equal(addr, newTestnetAddr)
+
+			// Mainnet
+			// Round trip encoding and decoding from string
+			addr.SetNetwork(Mainnet)
+			assert.Equal(Mainnet, addr.GetNetwork())
+			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(SECP256K1, maybeMainnetAddr.Protocol())
 			assert.Equal(addressHash(tc.input), maybeMainnetAddr.Payload())
 
-			// Round trip to and from bytes for mainnet
+			// Round trip to and from bytes
 			maybeMainnetAddrBytes, err := NewFromBytes(maybeMainnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeMainnetAddr, maybeMainnetAddrBytes)
+
+			// Round trip encoding and decoding json
+			mb, err := addr.MarshalJSON()
+			assert.NoError(err)
+
+			var newMainnetAddr Address
+			err = newMainnetAddr.UnmarshalJSON(mb)
+			assert.NoError(err)
+			// TODO support decoding with network natively
+			newMainnetAddr.SetNetwork(Mainnet)
+			assert.Equal(addr, newMainnetAddr)
+
 		})
 	}
 }
@@ -322,61 +319,57 @@ func TestVectorActorAddress(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			assert := assert.New(t)
 
-			// Address#String
+			// Testnet
 			// Round trip encoding and decoding from string
 			addr, err := NewActorAddress(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
-
-			maybeAddr, err := NewFromString(tc.expectedTestnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(Actor, maybeAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeAddrBytes, err := NewFromBytes(maybeAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeAddr, maybeAddrBytes)
-
-			// Round trip encoding and decoding json
-			b, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newAddr Address
-			err = newAddr.UnmarshalJSON(b)
-			assert.NoError(err)
-			assert.Equal(addr, newAddr)
-
-			// Address#StringFor
-			// Round trip encoding and decoding from string for testnet
-			testnetAddrStr, err := addr.StringFor(Testnet)
-			assert.NoError(err)
-			assert.Equal(tc.expectedTestnetAddrStr, testnetAddrStr)
 
 			maybeTestnetAddr, err := NewFromString(tc.expectedTestnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(Actor, maybeTestnetAddr.Protocol())
 			assert.Equal(addressHash(tc.input), maybeTestnetAddr.Payload())
 
-			// Round trip to and from bytes for testnet
+			// Round trip to and from bytes
 			maybeTestnetAddrBytes, err := NewFromBytes(maybeTestnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeTestnetAddr, maybeTestnetAddrBytes)
 
-			// Round trip encoding and decoding from string for mainnet
-			mainnetAddrStr, err := addr.StringFor(Mainnet)
+			// Round trip encoding and decoding json
+			tb, err := addr.MarshalJSON()
 			assert.NoError(err)
-			assert.Equal(tc.expectedMainnetAddrStr, mainnetAddrStr)
+
+			var newTestnetAddr Address
+			err = newTestnetAddr.UnmarshalJSON(tb)
+			assert.NoError(err)
+			assert.Equal(addr, newTestnetAddr)
+
+			// Mainnet
+			// Round trip encoding and decoding from string
+			addr.SetNetwork(Mainnet)
+			assert.Equal(Mainnet, addr.GetNetwork())
+			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(Actor, maybeMainnetAddr.Protocol())
 			assert.Equal(addressHash(tc.input), maybeMainnetAddr.Payload())
 
-			// Round trip to and from bytes for testnet
+			// Round trip to and from bytes
 			maybeMainnetAddrBytes, err := NewFromBytes(maybeMainnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeMainnetAddr, maybeMainnetAddrBytes)
+
+			// Round trip encoding and decoding json
+			mb, err := addr.MarshalJSON()
+			assert.NoError(err)
+
+			var newMainnetAddr Address
+			err = newMainnetAddr.UnmarshalJSON(mb)
+			assert.NoError(err)
+			// TODO support decoding with network natively
+			newMainnetAddr.SetNetwork(Mainnet)
+			assert.Equal(addr, newMainnetAddr)
 		})
 	}
 }
@@ -434,61 +427,57 @@ func TestVectorBLSAddress(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			assert := assert.New(t)
 
-			// Address#String
+			// Testnet
 			// Round trip encoding and decoding from string
 			addr, err := NewBLSAddress(tc.input)
 			assert.NoError(err)
 			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
-
-			maybeAddr, err := NewFromString(tc.expectedTestnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(BLS, maybeAddr.Protocol())
-			assert.Equal(tc.input, maybeAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeAddrBytes, err := NewFromBytes(maybeAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeAddr, maybeAddrBytes)
-
-			// Round trip encoding and decoding json
-			b, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newAddr Address
-			err = newAddr.UnmarshalJSON(b)
-			assert.NoError(err)
-			assert.Equal(addr, newAddr)
-
-			// Address#StringFor
-			// Round trip encoding and decoding from string for testnet
-			testnetAddrStr, err := addr.StringFor(Testnet)
-			assert.NoError(err)
-			assert.Equal(tc.expectedTestnetAddrStr, testnetAddrStr)
 
 			maybeTestnetAddr, err := NewFromString(tc.expectedTestnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(BLS, maybeTestnetAddr.Protocol())
 			assert.Equal(tc.input, maybeTestnetAddr.Payload())
 
-			// Round trip to and from bytes for testnet
+			// Round trip to and from bytes
 			maybeTestnetAddrBytes, err := NewFromBytes(maybeTestnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeTestnetAddr, maybeTestnetAddrBytes)
 
-			// Round trip encoding and decoding from string for mainnet
-			mainnetAddrStr, err := addr.StringFor(Mainnet)
+			// Round trip encoding and decoding json
+			tb, err := addr.MarshalJSON()
 			assert.NoError(err)
-			assert.Equal(tc.expectedMainnetAddrStr, mainnetAddrStr)
+
+			var newTestnetAddr Address
+			err = newTestnetAddr.UnmarshalJSON(tb)
+			assert.NoError(err)
+			assert.Equal(addr, newTestnetAddr)
+
+			// Mainnet
+			// Round trip encoding and decoding from string
+			addr.SetNetwork(Mainnet)
+			assert.Equal(Mainnet, addr.GetNetwork())
+			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
 
 			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
 			assert.NoError(err)
 			assert.Equal(BLS, maybeMainnetAddr.Protocol())
 			assert.Equal(tc.input, maybeMainnetAddr.Payload())
 
-			// Round trip to and from bytes for mainnet
+			// Round trip to and from bytes
 			maybeMainnetAddrBytes, err := NewFromBytes(maybeMainnetAddr.Bytes())
 			assert.NoError(err)
 			assert.Equal(maybeMainnetAddr, maybeMainnetAddrBytes)
+
+			// Round trip encoding and decoding json
+			mb, err := addr.MarshalJSON()
+			assert.NoError(err)
+
+			var newMainnetAddr Address
+			err = newMainnetAddr.UnmarshalJSON(mb)
+			assert.NoError(err)
+			// TODO support decoding with network natively
+			newMainnetAddr.SetNetwork(Mainnet)
+			assert.Equal(addr, newMainnetAddr)
 		})
 	}
 }
