@@ -100,6 +100,16 @@ func (a Address) String() string {
 	return str
 }
 
+// StringFor returns an address encoded as a string for a specific network.
+func (a Address) StringFor(network Network) (string, error) {
+	str, err := encode(network, a)
+	if err != nil {
+		return "", err
+	}
+
+	return str, nil
+}
+
 // Empty returns true if the address is empty, false otherwise.
 func (a Address) Empty() bool {
 	return a == Undef
