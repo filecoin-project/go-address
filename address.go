@@ -32,6 +32,9 @@ var addressAtlasEntry = atlas.BuildEntry(Address{}).Transform().
 		})).
 	Complete()
 
+// CurrentNetwork specifies which network the address belongs to
+var CurrentNetwork = Testnet
+
 // Address is the go type that represents an address in the filecoin network.
 type Address struct{ str string }
 
@@ -93,7 +96,7 @@ func (a Address) Bytes() []byte {
 
 // String returns an address encoded as a string.
 func (a Address) String() string {
-	str, err := encode(Testnet, a)
+	str, err := encode(CurrentNetwork, a)
 	if err != nil {
 		panic(err) // I don't know if this one is okay
 	}
