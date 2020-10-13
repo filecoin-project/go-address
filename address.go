@@ -54,7 +54,7 @@ const (
 // MainnetPrefix is the main network prefix.
 const MainnetPrefix = "f"
 
-// TestnetPrefix is the main network prefix.
+// TestnetPrefix is the test network prefix.
 const TestnetPrefix = "t"
 
 // Protocol represents which protocol an address uses.
