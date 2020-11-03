@@ -489,6 +489,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		{"t2gfvuyh7v2sx3patm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(16)}, // '1' is not in base32 alphabet
 		{"t2gfvuyh7v2sx3paTm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(14)}, // 'T' is not in base32 alphabet
 		{"t2", ErrInvalidLength},
+		{"t1234", ErrInvalidChecksum},
 	}
 
 	for _, tc := range testCases {
