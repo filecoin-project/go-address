@@ -208,6 +208,9 @@ func addressHash(ingest []byte) []byte {
 	return hash(ingest, payloadHashConfig)
 }
 
+// FIXME: This needs to be unified with the logic of `decode` (which would
+//  handle the initial verification of the checksum separately), both are doing
+//  the exact same length checks.
 func newAddress(protocol Protocol, payload []byte) (Address, error) {
 	switch protocol {
 	case ID:
