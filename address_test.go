@@ -546,15 +546,15 @@ func TestInvalidByteAddresses(t *testing.T) {
 		{[]byte{0}, ErrInvalidLength},
 
 		// SECP256K1 Protocol
-		{append([]byte{1}, make([]byte, PayloadHashLength-1)...), ErrInvalidPayload},
-		{append([]byte{1}, make([]byte, PayloadHashLength+1)...), ErrInvalidPayload},
+		{append([]byte{1}, make([]byte, PayloadHashLength-1)...), ErrInvalidLength},
+		{append([]byte{1}, make([]byte, PayloadHashLength+1)...), ErrInvalidLength},
 		// Actor Protocol
-		{append([]byte{2}, make([]byte, PayloadHashLength-1)...), ErrInvalidPayload},
-		{append([]byte{2}, make([]byte, PayloadHashLength+1)...), ErrInvalidPayload},
+		{append([]byte{2}, make([]byte, PayloadHashLength-1)...), ErrInvalidLength},
+		{append([]byte{2}, make([]byte, PayloadHashLength+1)...), ErrInvalidLength},
 
 		// BLS Protocol
-		{append([]byte{3}, make([]byte, BlsPublicKeyBytes-1)...), ErrInvalidPayload},
-		{append([]byte{3}, make([]byte, BlsPrivateKeyBytes+1)...), ErrInvalidPayload},
+		{append([]byte{3}, make([]byte, BlsPublicKeyBytes-1)...), ErrInvalidLength},
+		{append([]byte{3}, make([]byte, BlsPrivateKeyBytes+1)...), ErrInvalidLength},
 	}
 
 	for _, tc := range testCases {

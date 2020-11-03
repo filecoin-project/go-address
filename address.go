@@ -220,15 +220,15 @@ func newAddress(protocol Protocol, payload []byte) (Address, error) {
 		}
 		if n != len(payload) {
 			return Undef, xerrors.Errorf("different varint length (v:%d != p:%d): %w",
-				n, len(payload), ErrInvalidPayload)
+				n, len(payload), ErrInvalidLength)
 		}
 	case SECP256K1, Actor:
 		if len(payload) != PayloadHashLength {
-			return Undef, ErrInvalidPayload
+			return Undef, ErrInvalidLength
 		}
 	case BLS:
 		if len(payload) != BlsPublicKeyBytes {
-			return Undef, ErrInvalidPayload
+			return Undef, ErrInvalidLength
 		}
 	default:
 		return Undef, ErrUnknownProtocol
