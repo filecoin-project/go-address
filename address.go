@@ -305,7 +305,7 @@ func decode(a string) (Address, error) {
 	raw := a[2:]
 	if protocol == ID {
 		// 20 is length of math.MaxUint64 as a string
-		if len(raw) > 20 {
+		if len(raw) > MaxUint64StringLength {
 			return Undef, ErrInvalidLength
 		}
 		id, err := strconv.ParseUint(raw, 10, 64)
@@ -320,16 +320,22 @@ func decode(a string) (Address, error) {
 		return Undef, err
 	}
 
-	if len(payloadcksm)-ChecksumHashLength < 0 {
-		return Undef, ErrInvalidChecksum
+	if len(payloadcksm) < ChecksumHashLength {
+		return Undef, ErrInvalidLength
 	}
 
 	payload := payloadcksm[:len(payloadcksm)-ChecksumHashLength]
 	cksm := payloadcksm[len(payloadcksm)-ChecksumHashLength:]
 
 	if protocol == SECP256K1 || protocol == Actor {
-		if len(payload) != 20 {
-			return Undef, ErrInvalidPayload
+		if len(payload) != PayloadHashLength {
+			return Undef, ErrInvalidLength
+		}
+	}
+
+	if protocol == BLS {
+		if len(payload) != BlsPublicKeyBytes {
+			return Undef, ErrInvalidLength
 		}
 	}
 

@@ -46,6 +46,11 @@ var (
 // UndefAddressString is the string used to represent an empty address when encoded to a string.
 var UndefAddressString = "<empty>"
 
+// MaxUint64StringLength defines the maximum length of `uint64` as a string.
+// FIXME: Can we dynamically get this from something like `math.MaxUint64.Bytes()`
+//  or is this guaranteed to be always the same value?
+const MaxUint64StringLength = 20
+
 // PayloadHashLength defines the hash length taken over addresses using the Actor and SECP256K1 protocols.
 const PayloadHashLength = 20
 
