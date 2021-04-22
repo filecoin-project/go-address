@@ -3,6 +3,7 @@ package address
 import (
 	"bytes"
 	"encoding/base32"
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -276,7 +277,7 @@ func TestRandomActorAddress(t *testing.T) {
 
 func TestVectorActorAddress(t *testing.T) {
 	testCases := []struct {
-		input    []byte
+		input                  []byte
 		expectedTestnetAddrStr string
 		expectedMainnetAddrStr string
 	}{
@@ -372,7 +373,7 @@ func TestVectorActorAddress(t *testing.T) {
 
 func TestVectorBLSAddress(t *testing.T) {
 	testCases := []struct {
-		input    []byte
+		input                  []byte
 		expectedTestnetAddrStr string
 		expectedMainnetAddrStr string
 	}{
@@ -485,7 +486,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		{"t4gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", ErrUnknownProtocol},
 		{"t2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr24y", ErrInvalidChecksum},
 		{"t0banananananannnnnnnnn", ErrInvalidLength},
-		{"t0banananananannnnnnnn", ErrInvalidPayload},
+		{"t0banananananannnnnnn", ErrInvalidPayload},
 		{"t2gfvuyh7v2sx3patm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(16)}, // '1' is not in base32 alphabet
 		{"t2gfvuyh7v2sx3paTm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(14)}, // 'T' is not in base32 alphabet
 		{"t2", ErrInvalidLength},
@@ -646,4 +647,36 @@ func TestIDEdgeCase(t *testing.T) {
 	a, err := NewFromBytes([]byte{0, 0x80})
 	_ = a.String()
 	assert.Error(t, err)
+}
+
+func TestIDMax(t *testing.T) {
+	// Check construction.
+	_, err := NewIDAddress(math.MaxInt64 + 1)
+	assert.Error(t, err)
+	a, err := NewIDAddress(math.MaxInt64)
+	assert.NoError(t, err)
+
+	// Check addr parsing.
+	id, err := IDFromAddress(a)
+	assert.NoError(t, err)
+	assert.EqualValues(t, math.MaxInt64, id)
+
+	// Check string parsing.
+	_, err = NewFromString(fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxInt64, 10)))
+	assert.NoError(t, err)
+
+	_, err = NewFromString(fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxInt64+1, 10)))
+	assert.Error(t, err)
+
+	// Check CBOR unmarshaling.
+	badAddr := Address{str: string([]byte{
+		// 2**64 uvarint. We shouldn't be able to parse this.
+		0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01,
+	})}
+	var buf bytes.Buffer
+	err = badAddr.MarshalCBOR(&buf)
+	assert.NoError(t, err)
+	var targetAddr Address
+	err = targetAddr.UnmarshalCBOR(&buf)
+	assert.True(t, errors.Is(err, ErrInvalidPayload), "%#v", err)
 }
