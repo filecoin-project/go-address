@@ -211,13 +211,16 @@ func addressHash(ingest []byte) []byte {
 func newAddress(protocol Protocol, payload []byte) (Address, error) {
 	switch protocol {
 	case ID:
-		_, n, err := varint.FromUvarint(payload)
+		v, n, err := varint.FromUvarint(payload)
 		if err != nil {
 			return Undef, xerrors.Errorf("could not decode: %v: %w", err, ErrInvalidPayload)
 		}
 		if n != len(payload) {
 			return Undef, xerrors.Errorf("different varint length (v:%d != p:%d): %w",
 				n, len(payload), ErrInvalidPayload)
+		}
+		if v > math.MaxInt64 {
+			return Undef, xerrors.Errorf("id addresses must be less than 2^63: %w", ErrInvalidPayload)
 		}
 	case SECP256K1, Actor:
 		if len(payload) != PayloadHashLength {
@@ -304,11 +307,11 @@ func decode(a string) (Address, error) {
 
 	raw := a[2:]
 	if protocol == ID {
-		// 20 is length of math.MaxUint64 as a string
-		if len(raw) > 20 {
+		// 19 is length of math.MaxInt64 as a string
+		if len(raw) > 19 {
 			return Undef, ErrInvalidLength
 		}
-		id, err := strconv.ParseUint(raw, 10, 64)
+		id, err := strconv.ParseUint(raw, 10, 63)
 		if err != nil {
 			return Undef, ErrInvalidPayload
 		}
