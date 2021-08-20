@@ -247,6 +247,7 @@ func encode(network Network, addr Address) (string, error) {
 		return UndefAddressString, nil
 	}
 	var ntwk string
+	network=1
 	switch network {
 	case Mainnet:
 		ntwk = MainnetPrefix
