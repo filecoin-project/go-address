@@ -470,7 +470,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		{"t2gfvuyh7v2sx3patm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(16)}, // '1' is not in base32 alphabet
 		{"t2gfvuyh7v2sx3paTm1k23wdzmhyhtmqctasbr24y", base32.CorruptInputError(14)}, // 'T' is not in base32 alphabet
 		{"t2", ErrInvalidLength},
-		{"t1234", ErrInvalidChecksum},
+		{"t1234q", ErrInvalidChecksum},
 	}
 
 	for _, tc := range testCases {
@@ -659,4 +659,15 @@ func TestIDMax(t *testing.T) {
 	var targetAddr Address
 	err = targetAddr.UnmarshalCBOR(&buf)
 	assert.True(t, errors.Is(err, ErrInvalidPayload), "%#v", err)
+}
+
+func TestTrailingBits(t *testing.T) {
+	goodStr := "f1xpbyy4tkdx5si2bgo37dubc2xwv6fum5tk57mia"
+	badStr := "f1xpbyy4tkdx5si2bgo37dubc2xwv6fum5tk57mid"
+
+	_, err := NewFromString(goodStr)
+	assert.NoError(t, err, "should be able to decode the good string")
+
+	_, err = NewFromString(badStr)
+	assert.True(t, errors.Is(err, ErrInvalidEncoding), "%#v", err)
 }

@@ -323,6 +323,11 @@ func decode(a string) (Address, error) {
 		return Undef, err
 	}
 
+	reencodedRaw := AddressEncoding.WithPadding(-1).EncodeToString(payloadcksm)
+	if reencodedRaw != raw {
+		return Undef, ErrInvalidEncoding
+	}
+
 	if len(payloadcksm)-ChecksumHashLength < 0 {
 		return Undef, ErrInvalidChecksum
 	}
