@@ -14,7 +14,6 @@ import (
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/filecoin-project/go-crypto"
 	cbg "github.com/whyrusleeping/cbor-gen"
 )
 
@@ -113,25 +112,6 @@ func TestVectorsIDAddress(t *testing.T) {
 			assert.Equal(addr, newAddr)
 		})
 	}
-
-}
-
-func TestSecp256k1Address(t *testing.T) {
-	assert := assert.New(t)
-
-	sk, err := crypto.GenerateKey()
-	assert.NoError(err)
-
-	addr, err := NewSecp256k1Address(crypto.PublicKey(sk))
-	assert.NoError(err)
-	assert.Equal(SECP256K1, addr.Protocol())
-
-	str, err := encode(Mainnet, addr)
-	assert.NoError(err)
-
-	maybe, err := decode(str)
-	assert.NoError(err)
-	assert.Equal(addr, maybe)
 
 }
 
@@ -659,7 +639,7 @@ func TestIDMax(t *testing.T) {
 	// Check addr parsing.
 	id, err := IDFromAddress(a)
 	assert.NoError(t, err)
-	assert.EqualValues(t, math.MaxInt64, id)
+	assert.EqualValues(t, uint64(math.MaxInt64), id)
 
 	// Check string parsing.
 	_, err = NewFromString(fmt.Sprintf("t0%s", strconv.FormatUint(math.MaxInt64, 10)))
