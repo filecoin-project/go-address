@@ -41,6 +41,8 @@ var (
 	ErrInvalidLength = errors.New("invalid address length")
 	// ErrInvalidChecksum is returned when encountering an invalid address checksum.
 	ErrInvalidChecksum = errors.New("invalid address checksum")
+	// ErrInvalidEncoding is returned when encountering a non-standard encoding of an address.
+	ErrInvalidEncoding = errors.New("invalid encoding")
 )
 
 // UndefAddressString is the string used to represent an empty address when encoded to a string.
