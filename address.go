@@ -208,6 +208,9 @@ func addressHash(ingest []byte) []byte {
 	return hash(ingest, payloadHashConfig)
 }
 
+// FIXME: This needs to be unified with the logic of `decode` (which would
+//  handle the initial verification of the checksum separately), both are doing
+//  the exact same length checks.
 func newAddress(protocol Protocol, payload []byte) (Address, error) {
 	switch protocol {
 	case ID:
@@ -217,18 +220,18 @@ func newAddress(protocol Protocol, payload []byte) (Address, error) {
 		}
 		if n != len(payload) {
 			return Undef, xerrors.Errorf("different varint length (v:%d != p:%d): %w",
-				n, len(payload), ErrInvalidPayload)
+				n, len(payload), ErrInvalidLength)
 		}
 		if v > math.MaxInt64 {
 			return Undef, xerrors.Errorf("id addresses must be less than 2^63: %w", ErrInvalidPayload)
 		}
 	case SECP256K1, Actor:
 		if len(payload) != PayloadHashLength {
-			return Undef, ErrInvalidPayload
+			return Undef, ErrInvalidLength
 		}
 	case BLS:
 		if len(payload) != BlsPublicKeyBytes {
-			return Undef, ErrInvalidPayload
+			return Undef, ErrInvalidLength
 		}
 	default:
 		return Undef, ErrUnknownProtocol
@@ -307,8 +310,7 @@ func decode(a string) (Address, error) {
 
 	raw := a[2:]
 	if protocol == ID {
-		// 19 is length of math.MaxInt64 as a string
-		if len(raw) > 19 {
+		if len(raw) > MaxInt64StringLength {
 			return Undef, ErrInvalidLength
 		}
 		id, err := strconv.ParseUint(raw, 10, 63)
@@ -328,16 +330,22 @@ func decode(a string) (Address, error) {
 		return Undef, ErrInvalidEncoding
 	}
 
-	if len(payloadcksm)-ChecksumHashLength < 0 {
-		return Undef, ErrInvalidChecksum
+	if len(payloadcksm) < ChecksumHashLength {
+		return Undef, ErrInvalidLength
 	}
 
 	payload := payloadcksm[:len(payloadcksm)-ChecksumHashLength]
 	cksm := payloadcksm[len(payloadcksm)-ChecksumHashLength:]
 
 	if protocol == SECP256K1 || protocol == Actor {
-		if len(payload) != 20 {
-			return Undef, ErrInvalidPayload
+		if len(payload) != PayloadHashLength {
+			return Undef, ErrInvalidLength
+		}
+	}
+
+	if protocol == BLS {
+		if len(payload) != BlsPublicKeyBytes {
+			return Undef, ErrInvalidLength
 		}
 	}
 
