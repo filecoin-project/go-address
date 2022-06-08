@@ -34,7 +34,7 @@ var addressAtlasEntry = atlas.BuildEntry(Address{}).Transform().
 	Complete()
 
 // CurrentNetwork specifies which network the address belongs to
-var CurrentNetwork = Testnet
+var CurrentNetwork = Mainnet
 
 // Address is the go type that represents an address in the filecoin network.
 type Address struct{ str string }
