@@ -474,7 +474,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		expetErr      error
 	}{
 		{"Q2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownNetwork},
-		{"t4gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
+		{"t5gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
 		{"t2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr24y", "", ErrInvalidChecksum},
 		{"t0banananananannnnnnnnn", "", ErrInvalidLength},
 		{"t0banananananannnnnnn", "", ErrInvalidPayload},
@@ -483,7 +483,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		{"t2", "", ErrInvalidLength},
 		{"t1234q", "", ErrInvalidLength},
 		{"Q2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownNetwork},
-		{"t4gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
+		{"t5gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
 		{"t2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr24y", "", ErrInvalidChecksum},
 		{strings.Repeat("a", MaxAddressStringLength+1), "", ErrInvalidLength},
 		{"t", "", ErrInvalidLength},
@@ -527,7 +527,7 @@ func TestInvalidByteAddresses(t *testing.T) {
 		expetErr error
 	}{
 		// Unknown Protocol
-		{[]byte{4, 4, 4}, ErrUnknownProtocol},
+		{[]byte{5, 4, 4}, ErrUnknownProtocol},
 
 		// ID protocol
 		{[]byte{0}, ErrInvalidLength},
