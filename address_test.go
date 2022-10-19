@@ -478,7 +478,7 @@ func TestInvalidByteAddresses(t *testing.T) {
 
 		// Delegate Protocol
 		// - subaddress exceeds the limit
-		{append([]byte{4, 0}, make([]byte, MaxSubaddressLen+1, MaxSubaddressLen+1)...), ErrInvalidLength},
+		{append([]byte{4, 0}, make([]byte, MaxSubaddressLen+1)...), ErrInvalidLength},
 		// - a hanging uvarint for a namespace
 		{[]byte{4, 0xff}, ErrInvalidPayload},
 	}
@@ -655,7 +655,7 @@ func TestDelegatedAddress(t *testing.T) {
 	}{
 		{32, []byte{0xff, 0xff, 0xff, 0xff, 0xff}, "f432f77777777x32lpna"},
 		{varint.MaxValueUvarint63, []byte{}, "f49223372036854775807fiic6zsy"},
-		{varint.MaxValueUvarint63, make([]byte, MaxSubaddressLen, MaxSubaddressLen), "f49223372036854775807faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahwgiuam"},
+		{varint.MaxValueUvarint63, make([]byte, MaxSubaddressLen), "f49223372036854775807faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahwgiuam"},
 	}
 
 	CurrentNetwork = Mainnet
