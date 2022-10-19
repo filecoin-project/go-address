@@ -57,15 +57,17 @@ const PayloadHashLength = 20
 // ChecksumHashLength defines the hash length used for calculating address checksums.
 const ChecksumHashLength = 4
 
-// MaxAddressStringLength is the max length of an address encoded as a string
-// it include the network prefx, protocol, and bls publickey
-const MaxAddressStringLength = 2 + 84
+// MaxAddressStringLength is the max length of an address encoded as a string (115).
+const MaxAddressStringLength = 2 + MaxInt64StringLength + 1 + 93
 
 // BlsPublicKeyBytes is the length of a BLS public key
 const BlsPublicKeyBytes = 48
 
 // BlsPrivateKeyBytes is the length of a BLS private key
 const BlsPrivateKeyBytes = 32
+
+// MaxSubaddressLen is the maximum length of a delegated address's sub-address.
+const MaxSubaddressLen = 54
 
 var payloadHashConfig = &blake2b.Config{Size: PayloadHashLength}
 var checksumHashConfig = &blake2b.Config{Size: ChecksumHashLength}

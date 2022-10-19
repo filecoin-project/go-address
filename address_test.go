@@ -14,6 +14,7 @@ import (
 
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/xerrors"
 
 	cbg "github.com/whyrusleeping/cbor-gen"
 )
@@ -89,28 +90,8 @@ func TestVectorsIDAddress(t *testing.T) {
 			// Round trip encoding and decoding from string
 			addr, err := NewIDAddress(tc.input)
 			assert.NoError(err)
-			assert.Equal(tc.expected, addr.String())
 
-			maybeAddr, err := NewFromString(tc.expected)
-			assert.NoError(err)
-			assert.Equal(ID, maybeAddr.Protocol())
-			id, _, err := varint.FromUvarint(maybeAddr.Payload())
-			assert.NoError(err)
-			assert.Equal(tc.input, id)
-
-			// Round trip to and from bytes
-			maybeAddrBytes, err := NewFromBytes(maybeAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeAddr, maybeAddrBytes)
-
-			// Round trip encoding and decoding json
-			b, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newAddr Address
-			err = newAddr.UnmarshalJSON(b)
-			assert.NoError(err)
-			assert.Equal(addr, newAddr)
+			validateAddress(t, addr, varint.ToUvarint(tc.input), tc.expected)
 		})
 	}
 
@@ -188,51 +169,12 @@ func TestVectorSecp256k1Address(t *testing.T) {
 			CurrentNetwork = Testnet
 			addr, err := NewSecp256k1Address(tc.input)
 			assert.NoError(err)
-			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
-
-			maybeTestnetAddr, err := NewFromString(tc.expectedTestnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(SECP256K1, maybeTestnetAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeTestnetAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeTestnetAddrBytes, err := NewFromBytes(maybeTestnetAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeTestnetAddr, maybeTestnetAddrBytes)
-
-			// Round trip encoding and decoding json
-			tb, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newTestnetAddr Address
-			err = newTestnetAddr.UnmarshalJSON(tb)
-			assert.NoError(err)
-			assert.Equal(addr, newTestnetAddr)
+			validateAddress(t, addr, addressHash(tc.input), tc.expectedTestnetAddrStr)
 
 			// Mainnet
 			// Round trip encoding and decoding from string
 			CurrentNetwork = Mainnet
-			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
-
-			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(SECP256K1, maybeMainnetAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeMainnetAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeMainnetAddrBytes, err := NewFromBytes(maybeMainnetAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeMainnetAddr, maybeMainnetAddrBytes)
-
-			// Round trip encoding and decoding json
-			mb, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newMainnetAddr Address
-			err = newMainnetAddr.UnmarshalJSON(mb)
-			assert.NoError(err)
-			assert.Equal(addr, newMainnetAddr)
-
+			validateAddress(t, addr, addressHash(tc.input), tc.expectedMainnetAddrStr)
 		})
 	}
 }
@@ -253,7 +195,6 @@ func TestRandomActorAddress(t *testing.T) {
 	maybe, err := decode(str)
 	assert.NoError(err)
 	assert.Equal(addr, maybe)
-
 }
 
 func TestVectorActorAddress(t *testing.T) {
@@ -304,52 +245,43 @@ func TestVectorActorAddress(t *testing.T) {
 			CurrentNetwork = Testnet
 			addr, err := NewActorAddress(tc.input)
 			assert.NoError(err)
-			assert.Equal(tc.expectedTestnetAddrStr, addr.String())
 
-			maybeTestnetAddr, err := NewFromString(tc.expectedTestnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(Actor, maybeTestnetAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeTestnetAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeTestnetAddrBytes, err := NewFromBytes(maybeTestnetAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeTestnetAddr, maybeTestnetAddrBytes)
-
-			// Round trip encoding and decoding json
-			tb, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newTestnetAddr Address
-			err = newTestnetAddr.UnmarshalJSON(tb)
-			assert.NoError(err)
-			assert.Equal(addr, newTestnetAddr)
+			validateAddress(t, addr, addressHash(tc.input), tc.expectedTestnetAddrStr)
 
 			// Mainnet
 			// Round trip encoding and decoding from string
 			CurrentNetwork = Mainnet
-			assert.Equal(tc.expectedMainnetAddrStr, addr.String())
-
-			maybeMainnetAddr, err := NewFromString(tc.expectedMainnetAddrStr)
-			assert.NoError(err)
-			assert.Equal(Actor, maybeMainnetAddr.Protocol())
-			assert.Equal(addressHash(tc.input), maybeMainnetAddr.Payload())
-
-			// Round trip to and from bytes
-			maybeMainnetAddrBytes, err := NewFromBytes(maybeMainnetAddr.Bytes())
-			assert.NoError(err)
-			assert.Equal(maybeMainnetAddr, maybeMainnetAddrBytes)
-
-			// Round trip encoding and decoding json
-			mb, err := addr.MarshalJSON()
-			assert.NoError(err)
-
-			var newMainnetAddr Address
-			err = newMainnetAddr.UnmarshalJSON(mb)
-			assert.NoError(err)
-			assert.Equal(addr, newMainnetAddr)
+			validateAddress(t, addr, addressHash(tc.input), tc.expectedMainnetAddrStr)
 		})
 	}
+}
+
+func validateAddress(t *testing.T, addr Address, expectedPayload []byte, expectedString string) {
+	t.Helper()
+	assert := assert.New(t)
+
+	assert.Equal(expectedString, addr.String())
+
+	// Round trip from the string.
+	parsed, err := NewFromString(expectedString)
+	assert.NoError(err)
+	assert.Equal(addr.Protocol(), parsed.Protocol())
+	assert.Equal(expectedPayload, parsed.Payload())
+	assert.Equal(addr.Payload(), parsed.Payload())
+
+	// Round trip to and from bytes from the string.
+	fromBytes, err := NewFromBytes(parsed.Bytes())
+	assert.NoError(err)
+	assert.Equal(parsed, fromBytes)
+
+	// Round trip encoding and decoding json
+	mb, err := addr.MarshalJSON()
+	assert.NoError(err)
+
+	var parsedJson Address
+	err = parsedJson.UnmarshalJSON(mb)
+	assert.NoError(err)
+	assert.Equal(addr, parsedJson)
 }
 
 func TestVectorBLSAddress(t *testing.T) {
@@ -474,7 +406,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		expetErr      error
 	}{
 		{"Q2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownNetwork},
-		{"t4gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
+		{"t5gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
 		{"t2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr24y", "", ErrInvalidChecksum},
 		{"t0banananananannnnnnnnn", "", ErrInvalidLength},
 		{"t0banananananannnnnnn", "", ErrInvalidPayload},
@@ -483,7 +415,7 @@ func TestInvalidStringAddresses(t *testing.T) {
 		{"t2", "", ErrInvalidLength},
 		{"t1234q", "", ErrInvalidLength},
 		{"Q2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownNetwork},
-		{"t4gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
+		{"t5gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr23y", "", ErrUnknownProtocol},
 		{"t2gfvuyh7v2sx3patm5k23wdzmhyhtmqctasbr24y", "", ErrInvalidChecksum},
 		{strings.Repeat("a", MaxAddressStringLength+1), "", ErrInvalidLength},
 		{"t", "", ErrInvalidLength},
@@ -523,11 +455,11 @@ func TestInvalidStringAddresses(t *testing.T) {
 
 func TestInvalidByteAddresses(t *testing.T) {
 	testCases := []struct {
-		input    []byte
-		expetErr error
+		input     []byte
+		expectErr error
 	}{
 		// Unknown Protocol
-		{[]byte{4, 4, 4}, ErrUnknownProtocol},
+		{[]byte{5, 4, 4}, ErrUnknownProtocol},
 
 		// ID protocol
 		{[]byte{0}, ErrInvalidLength},
@@ -535,6 +467,7 @@ func TestInvalidByteAddresses(t *testing.T) {
 		// SECP256K1 Protocol
 		{append([]byte{1}, make([]byte, PayloadHashLength-1)...), ErrInvalidLength},
 		{append([]byte{1}, make([]byte, PayloadHashLength+1)...), ErrInvalidLength},
+
 		// Actor Protocol
 		{append([]byte{2}, make([]byte, PayloadHashLength-1)...), ErrInvalidLength},
 		{append([]byte{2}, make([]byte, PayloadHashLength+1)...), ErrInvalidLength},
@@ -542,15 +475,21 @@ func TestInvalidByteAddresses(t *testing.T) {
 		// BLS Protocol
 		{append([]byte{3}, make([]byte, BlsPublicKeyBytes-1)...), ErrInvalidLength},
 		{append([]byte{3}, make([]byte, BlsPrivateKeyBytes+1)...), ErrInvalidLength},
+
+		// Delegate Protocol
+		// - subaddress exceeds the limit
+		{append([]byte{4, 0}, make([]byte, MaxSubaddressLen+1)...), ErrInvalidLength},
+		// - a hanging uvarint for a namespace
+		{[]byte{4, 0xff}, ErrInvalidPayload},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
-		t.Run(fmt.Sprintf("testing byte address: %s", tc.expetErr), func(t *testing.T) {
+		t.Run(fmt.Sprintf("testing byte address: %s", tc.expectErr), func(t *testing.T) {
 			assert := assert.New(t)
 
 			_, err := NewFromBytes(tc.input)
-			assert.Equal(tc.expetErr, err)
+			assert.True(xerrors.Is(err, tc.expectErr))
 		})
 	}
 
@@ -706,4 +645,27 @@ func TestTrailingBits(t *testing.T) {
 
 	_, err = NewFromString(badStr)
 	assert.True(t, errors.Is(err, ErrInvalidEncoding), "%#v", err)
+}
+
+func TestDelegatedAddress(t *testing.T) {
+	cases := []struct {
+		namespace  uint64
+		subaddress []byte
+		expected   string
+	}{
+		{32, []byte{0xff, 0xff, 0xff, 0xff, 0xff}, "f432f77777777x32lpna"},
+		{varint.MaxValueUvarint63, []byte{}, "f49223372036854775807fiic6zsy"},
+		{varint.MaxValueUvarint63, make([]byte, MaxSubaddressLen), "f49223372036854775807faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahwgiuam"},
+	}
+
+	CurrentNetwork = Mainnet
+
+	for _, tc := range cases {
+		t.Run(fmt.Sprintf("delegated_%s", tc.expected), func(t *testing.T) {
+			addr, err := NewDelegatedAddress(tc.namespace, tc.subaddress)
+			assert.NoError(t, err)
+			payload := append(varint.ToUvarint(tc.namespace), tc.subaddress...)
+			validateAddress(t, addr, payload, tc.expected)
+		})
+	}
 }
