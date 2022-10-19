@@ -253,7 +253,7 @@ func newAddress(protocol Protocol, payload []byte) (Address, error) {
 	case Delegated:
 		namespace, n, err := varint.FromUvarint(payload)
 		if err != nil {
-			return Undef, xerrors.Errorf("could not decode delegated address namespace : %v: %w", err, ErrInvalidPayload)
+			return Undef, xerrors.Errorf("could not decode delegated address namespace: %v: %w", err, ErrInvalidPayload)
 		}
 		if namespace > math.MaxInt64 {
 			return Undef, xerrors.Errorf("namespace id must be less than 2^63: %w", ErrInvalidPayload)
