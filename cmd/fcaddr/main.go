@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 
@@ -38,7 +38,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	publicKeyHex, err := ioutil.ReadAll(os.Stdin)
+	publicKeyHex, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		os.Exit(1)
