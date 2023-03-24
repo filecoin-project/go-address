@@ -59,7 +59,6 @@ import (
 	"testing"
 	"time"
 
-	ffi "github.com/filecoin-project/filecoin-ffi"
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
