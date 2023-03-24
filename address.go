@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	cbor "github.com/ipfs/go-ipld-cbor"
-	"github.com/minio/blake2b-simd"
 	"github.com/multiformats/go-varint"
 	"github.com/polydawn/refmt/obj/atlas"
+	"golang.org/x/crypto/blake2b"
 	"golang.org/x/xerrors"
 
 	cbg "github.com/whyrusleeping/cbor-gen"
@@ -211,7 +211,7 @@ func NewFromBytes(addr []byte) (Address, error) {
 
 // Checksum returns the checksum of `ingest`.
 func Checksum(ingest []byte) []byte {
-	return hash(ingest, checksumHashConfig)
+	return hash(ingest, ChecksumHashLength)
 }
 
 // ValidateChecksum returns true if the checksum of `ingest` is equal to `expected`>
@@ -221,7 +221,7 @@ func ValidateChecksum(ingest, expect []byte) bool {
 }
 
 func addressHash(ingest []byte) []byte {
-	return hash(ingest, payloadHashConfig)
+	return hash(ingest, PayloadHashLength)
 }
 
 // FIXME: This needs to be unified with the logic of `decode` (which would
@@ -444,8 +444,9 @@ func decode(a string) (Address, error) {
 	return newAddress(protocol, payload)
 }
 
-func hash(ingest []byte, cfg *blake2b.Config) []byte {
-	hasher, err := blake2b.New(cfg)
+// hash returns the BLAKE2b checksum using a hasher of custom length size
+func hash(ingest []byte, size int) []byte {
+	hasher, err := blake2b.New(size, nil)
 	if err != nil {
 		// If this happens sth is very wrong.
 		panic(fmt.Sprintf("invalid address hash configuration: %v", err)) // ok
