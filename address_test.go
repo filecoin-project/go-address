@@ -179,7 +179,7 @@ func TestRandomActorAddress(t *testing.T) {
 	assert := assert.New(t)
 
 	actorMsg := make([]byte, 20)
-	//lint:ignore no, we don't want crypto randomness
+	//lint:ignore SA1019 we want non-crypto randomness
 	rand.Read(actorMsg)
 
 	addr, err := NewActorAddress(actorMsg)
