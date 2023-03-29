@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
@@ -18,10 +17,6 @@ import (
 
 	cbg "github.com/whyrusleeping/cbor-gen"
 )
-
-func init() {
-	rand.Seed(time.Now().Unix())
-}
 
 func TestRandomIDAddress(t *testing.T) {
 	assert := assert.New(t)
@@ -184,6 +179,7 @@ func TestRandomActorAddress(t *testing.T) {
 	assert := assert.New(t)
 
 	actorMsg := make([]byte, 20)
+	//lint:ignore no, we don't want crypto randomness
 	rand.Read(actorMsg)
 
 	addr, err := NewActorAddress(actorMsg)
