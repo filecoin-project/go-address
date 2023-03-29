@@ -88,6 +88,7 @@ func TestVectorsIDAddress(t *testing.T) {
 			assert := assert.New(t)
 
 			// Round trip encoding and decoding from string
+			CurrentNetwork = Testnet
 			addr, err := NewIDAddress(tc.input)
 			assert.NoError(err)
 
