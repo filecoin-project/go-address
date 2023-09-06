@@ -3,8 +3,6 @@ package address
 import (
 	"encoding/base32"
 	"errors"
-
-	"github.com/minio/blake2b-simd"
 )
 
 func init() {
@@ -68,9 +66,6 @@ const BlsPrivateKeyBytes = 32
 
 // MaxSubaddressLen is the maximum length of a delegated address's sub-address.
 const MaxSubaddressLen = 54
-
-var payloadHashConfig = &blake2b.Config{Size: PayloadHashLength}
-var checksumHashConfig = &blake2b.Config{Size: ChecksumHashLength}
 
 const encodeStd = "abcdefghijklmnopqrstuvwxyz234567"
 
