@@ -2,7 +2,6 @@ module github.com/filecoin-project/go-address
 
 go 1.21
 
-
 require (
 	github.com/filecoin-project/go-crypto v0.0.0-20191218222705-effae4ea9f03
 	github.com/ipfs/go-ipld-cbor v0.0.5
