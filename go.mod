@@ -1,6 +1,6 @@
 module github.com/filecoin-project/go-address
 
-go 1.21
+go 1.22
 
 require (
 	github.com/filecoin-project/go-crypto v0.0.0-20191218222705-effae4ea9f03
