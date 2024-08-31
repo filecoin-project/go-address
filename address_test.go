@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/filecoin-project/go-crypto"
 	"github.com/multiformats/go-varint"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/xerrors"
 
 	cbg "github.com/whyrusleeping/cbor-gen"
 )
@@ -486,7 +486,7 @@ func TestInvalidByteAddresses(t *testing.T) {
 			assert := assert.New(t)
 
 			_, err := NewFromBytes(tc.input)
-			assert.True(xerrors.Is(err, tc.expectErr))
+			assert.True(errors.Is(err, tc.expectErr))
 		})
 	}
 
@@ -665,4 +665,22 @@ func TestDelegatedAddress(t *testing.T) {
 			validateAddress(t, addr, payload, tc.expected)
 		})
 	}
+}
+func TestSecp256k1Address(t *testing.T) {
+	assert := assert.New(t)
+
+	sk, err := crypto.GenerateKey()
+	assert.NoError(err)
+
+	addr, err := NewSecp256k1Address(crypto.PublicKey(sk))
+	assert.NoError(err)
+	assert.Equal(SECP256K1, addr.Protocol())
+
+	str, err := encode(Mainnet, addr)
+	assert.NoError(err)
+
+	maybe, err := decode(str)
+	assert.NoError(err)
+	assert.Equal(addr, maybe)
+
 }
