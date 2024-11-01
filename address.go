@@ -105,6 +105,14 @@ func (a Address) String() string {
 	return str
 }
 
+func (a Address) StringWithNetwork(network Network) string {
+	str, err := encode(network, a)
+	if err != nil {
+		panic(err) // I don't know if this one is okay
+	}
+	return str
+}
+
 // Empty returns true if the address is empty, false otherwise.
 func (a Address) Empty() bool {
 	return a == Undef
